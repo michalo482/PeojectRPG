@@ -1,31 +1,22 @@
 #include <iostream>
-#include "allclasses.h"
+#include "playerCharacter.h"
 
 int main() {
 
-	Warrior warr1;
-	Wizard wiz1;
-	Rogue rog1;
-	Cleric cler1;
+	PlayerCharacter pc1(new Wizard());
 
-	warr1.takeDamage(10);
-
-	std::cout << "MaxHP: " << warr1.getMaxHP() << "\n" << "CurrHP: " << warr1.getCurrentHP() << "\n" << "Str: " << warr1.getStr() << "\n" << "Int: " << warr1.getInt() << "\n";
-
-	warr1.heal(4);
-
-	std::cout << "MaxHP: " << warr1.getMaxHP() << "\n" << "CurrHP: " << warr1.getCurrentHP() << "\n" << "Str: " << warr1.getStr() << "\n" << "Int: " << warr1.getInt() << "\n";
+	
 
 
 	for (int i = 0; i < 2; i++) {
-		std::cout << "Cleric:\n"
-			<< "-MaxHP: " << cler1.getMaxHP() << '\n'
-			<< "-Str: " << cler1.getStr() << '\n'
-			<< "-Int: " << cler1.getInt() << '\n'
-			<< "-Level: " << cler1.GetLevel() << '\n'
-			<< "-EXP: " << cler1.GetCurrentEXP() << '\n';
-
-		cler1.gainEXP(1000u);
+		std::cout << pc1.getClassName() << '\n'
+			<< "-Level: " << pc1.getLevel() << '\n'
+			<< "-EXP: " << pc1.getCurrentEXP() << '/' << pc1.getEXPToNextLevel() << '\n'
+			<< "-HP: " << pc1.getCurrentHP() << '/' << pc1.getMaxHP() << '\n'
+			<< "-Str: " << pc1.getStr() << '\n'
+			<< "-Int: " << pc1.getInt() << '\n';
+			
+		pc1.gainEXP(100u);
 	}
 
 

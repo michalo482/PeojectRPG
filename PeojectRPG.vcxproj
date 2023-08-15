@@ -131,16 +131,9 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="allclasses.h" />
-    <ClInclude Include="cleric.h" />
-    <ClInclude Include="hp.h" />
-    <ClInclude Include="hptype.h" />
-    <ClInclude Include="levelup.h" />
-    <ClInclude Include="rogue.h" />
+    <ClInclude Include="pointwell.h" />
+    <ClInclude Include="playerCharacter.h" />
     <ClInclude Include="statblock.h" />
-    <ClInclude Include="stattype.h" />
-    <ClInclude Include="warrior.h" />
-    <ClInclude Include="wizard.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
