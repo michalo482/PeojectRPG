@@ -5,10 +5,9 @@ typedef std::uint16_t welltype;
 
 class PointWell {
 public:
-	PointWell() {
-		Max = 1u;
-		Current = 1u;
-	}
+	PointWell() 
+		: Max(1u), Current(1u) {}
+	
 
 	PointWell(welltype mHP, welltype cHP) {
 		Max = mHP;
