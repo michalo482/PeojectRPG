@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
+#include "types.h"
 
-typedef std::uint16_t welltype;
 
 class PointWell {
 public:

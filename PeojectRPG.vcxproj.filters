@@ -32,5 +32,14 @@
     <ClInclude Include="ability.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="buff.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="corestats.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="types.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

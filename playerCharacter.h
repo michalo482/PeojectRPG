@@ -7,9 +7,8 @@
 #include "statblock.h"
 #include "pointwell.h"
 #include "ability.h"
+#include "types.h"
 
-typedef std::uint16_t leveltype;
-typedef std::uint64_t exptype;
 
 class PlayerCharacterDelegate : public StatBlock {
 
@@ -36,6 +35,11 @@ public:
 
 	exptype getEXPToNextLevel() {
 		return EXPToNextLevel;
+	}
+
+	void applyBuff(Buff b) {
+		
+		addNewBuff(b);
 	}
 
 	virtual void levelUp() = 0;
@@ -233,17 +237,25 @@ public:
 		else
 			return 0;
 	}
-	stattype getStr() { return pcclass->getStr(); }
-	stattype getInt() { return pcclass->getInt(); }
-	stattype getAgi() { return pcclass->getAgi(); }
-	stattype getArmor() { return pcclass->getArmor(); }
-	stattype getElementRes() { return pcclass->getElementRes(); }
+	stattype getBaseStr() { return pcclass->getBaseStr(); }
+	stattype getBaseInt() { return pcclass->getBaseInt(); }
+	stattype getBaseAgi() { return pcclass->getBaseAgi(); }
+	stattype getBaseArmor() { return pcclass->getBaseArmor(); }
+	stattype getBaseElementRes() { return pcclass->getBaseElementRes(); }
+
+	stattype getTotalStr() { return pcclass->getTotalStr() ; }
+	stattype getTotalInt() { return pcclass->getTotalInt(); }
+	stattype getTotalAgi() { return pcclass->getTotalAgi(); }
+	stattype getTotalArmor() { return pcclass->getTotalArmor(); }
+	stattype getTotalElementRes() { return pcclass->getTotalElementRes(); }
 
 	std::vector<Ability> getAbilities() { return pcclass->Abilities; }
 
 	void gainEXP(exptype gained) { pcclass->gainEXP(gained); }
 	void takeDamage(welltype damage) { pcclass->HP->reduce(damage); }
 	void heal(welltype amt) { pcclass->HP->increase(amt); }
+
+	void applyBuff(Buff b) { pcclass->applyBuff(b); }
 
 };
 
