@@ -3,9 +3,9 @@
 #include "types.h"
 
 struct CoreStats {
-	stattype Strenght = 1;
-	stattype Intellect = 1;
-	stattype Agility = 1;
+	stattype Strenght = 0;
+	stattype Intellect = 0;
+	stattype Agility = 0;
 	stattype Armor = 0;
 	stattype ElementalResistance = 0;
 
