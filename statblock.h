@@ -1,95 +1,66 @@
 #pragma once
-#include <cstdint>
-#include <vector>
-#include "corestats.h"
 #include "types.h"
 #include "buff.h"
+#include <vector>
 
 
 
 class StatBlock {
-	/*stattype BaseStrenght;
-	stattype BaseIntellect;
-	stattype BaseAgility;
-	stattype BaseArmor;
-	stattype BaseElementalResistance;*/
-
-	CoreStats BaseStats;
-
-	/*stattype TotalStrenghtFromBuffs = 0;
-	stattype TotalIntellectFromBuffs = 0;
-	stattype TotalAgilityFromBuffs = 0;
-	stattype TotalArmorFromBuffs = 0;
-	stattype TotalElementalResistanceFromBuffs = 0;*/
-
-	CoreStats StatsFromBuffs;
-
+    CoreStats base;
+    CoreStats fromBuffs;
 public:
-	//StatBlock() : Strenght(1u), Intellect(1u), Agility(1u), Armor(0u), ElementalResistance(0u) {}
+    explicit StatBlock(stattype s = 1, stattype i = 1, stattype a = 1, stattype arm = 0, stattype elres = 0) {
+        base.Strength = s;
+        base.Intellect = i;
+        base.Agility = a;
+        base.Armor = arm;
+        base.ElementRes = elres;
+    }
+    stattype getBaseStrength() { return   base.Strength; }
+    stattype getBaseIntellect() { return  base.Intellect; }
+    stattype getBaseAgility() { return    base.Agility; }
+    stattype getBaseArmor() { return      base.Armor; }
+    stattype getBaseElementRes() { return base.ElementRes; }
 
-	explicit StatBlock(stattype s = 1u, stattype i = 1u, stattype a = 1u, stattype arm = 0u, stattype elemres = 0u) {
-		BaseStats.Strenght = s;
-		BaseStats.Intellect = i;
-		BaseStats.Agility = a;
-		BaseStats.Armor = arm;
-		BaseStats.ElementalResistance = elemres;
-	}
-
-	stattype getBaseStr() { return        BaseStats.Strenght; }
-	stattype getBaseInt() { return        BaseStats.Intellect; }
-	stattype getBaseAgi() { return        BaseStats.Agility; }
-	stattype getBaseArmor() { return      BaseStats.Armor; }
-	stattype getBaseElementRes() { return BaseStats.ElementalResistance; }
-
-	stattype getTotalStr() { return        BaseStats.Strenght +            StatsFromBuffs.Strenght; }
-	stattype getTotalInt() { return        BaseStats.Intellect +           StatsFromBuffs.Intellect; }
-	stattype getTotalAgi() { return        BaseStats.Agility +             StatsFromBuffs.Agility; }
-	stattype getTotalArmor() { return      BaseStats.Armor + StatsFromBuffs.Armor; }
-	stattype getTotalElementRes() { return BaseStats.ElementalResistance + StatsFromBuffs.ElementalResistance; }
+    stattype getTotalStrength() { return   base.Strength + fromBuffs.Strength; }
+    stattype getTotalIntellect() { return  base.Intellect + fromBuffs.Intellect; }
+    stattype getTotalAgility() { return    base.Agility + fromBuffs.Agility; }
+    stattype getTotalArmor() { return      base.Armor + fromBuffs.Armor; }
+    stattype getTotalElementRes() { return base.ElementRes + fromBuffs.ElementRes; }
 
 protected:
-	void addNewBuff(Buff b) {
-		for (auto& buff : Buffs) {
-			if (b.Name == buff.Name) {
-				buff.Duration = b.Duration;
-				return;
-			}
-		}
-		Buffs.push_back(b);
-		recalculateBuff();
-	}
-	std::vector<Buff> Buffs;
-	void increaseStats(stattype s = 0, stattype i = 0, stattype a = 0, stattype arm = 0, stattype elemres = 0) {
-		BaseStats.Strenght += s;
-		BaseStats.Intellect += i;
-		BaseStats.Agility += a;
-		BaseStats.Armor += arm;
-		BaseStats.ElementalResistance += elemres;
-	}
-	void increaseStats(CoreStats cs) {
-		BaseStats += cs;
-	}
-
+    void addNewBuff(Buff b) {
+        for (auto& buff : Buffs) {
+            if (b.Name == buff.Name) {
+                buff.Duration = b.Duration;
+                return;
+            }
+        }
+        Buffs.push_back(b);
+        recalculate_buffs();
+    }
+    std::vector<Buff> Buffs;
+    void increaseStats(stattype s = 0, stattype i = 0, stattype a = 0, stattype arm = 0, stattype elres = 0) {
+        base.Strength += s;
+        base.Intellect += i;
+        base.Agility += a;
+        base.Armor += arm;
+        base.ElementRes += elres;
+    }
+    void increaseStats(CoreStats cs) {
+        base += cs;
+    }
 private:
-	void recalculateBuff() {
-		/*stattype totalstrenghtfrombuffs = 0;
-		stattype totalintellectfrombuffs = 0;
-		stattype totalagilityfrombuffs = 0;
-		stattype totalarmorfrombuffs = 0;
-		stattype totalelementalresistancefrombuffs = 0;*/
-
-		CoreStats tmp;
-
-		for (const auto& b : Buffs) {
-			if (b.isDebuff) {
-				tmp -= b.BuffedStats;				
-			}
-			else {
-				tmp += b.BuffedStats;
-			}
-		}
-
-		StatsFromBuffs = tmp;
-		
-	}
+    void recalculate_buffs() {
+        CoreStats tmp_total;
+        for (const auto& b : Buffs) {
+            if (b.isDebuff) {
+                tmp_total -= b.BuffedStats;
+            }
+            else {
+                tmp_total += b.BuffedStats;
+            }
+        }
+        fromBuffs = tmp_total;
+    }
 };

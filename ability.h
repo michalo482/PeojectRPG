@@ -1,4 +1,5 @@
 #pragma once
+#include "types.h"
 #include <string>
 
 enum class ABILITYTARGET { SELF, ALLY, ENEMY };

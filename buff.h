@@ -1,18 +1,21 @@
 #pragma once
 #include <string>
-#include "statblock.h"
+#include "item.h"
+#include "types.h"
 #include "corestats.h"
+#include "statblock.h"
+
 
 struct Buff {
 
 	Buff(std::string n, uint16_t d = 1, bool is = false, stattype s = 0, stattype i = 0, stattype a = 0, stattype arm = 0, stattype elemres = 0)
 		: Name(n), Duration(d), isDebuff(is) {
 
-		BuffedStats.Strenght = s;
+		BuffedStats.Strength = s;
 		BuffedStats.Intellect = i;
 		BuffedStats.Agility = a;
 		BuffedStats.Armor = arm;
-		BuffedStats.ElementalResistance = elemres;
+		BuffedStats.ElementRes = elemres;
 
 	};
 

@@ -1,4 +1,5 @@
 #pragma once
+#include "types.h"
 #include <cstdint>
 #include <memory>
 #include <iostream>
@@ -7,8 +8,7 @@
 #include "statblock.h"
 #include "pointwell.h"
 #include "ability.h"
-#include "types.h"
-#include "equipment.h"
+#include "item.h"
 
 
 class PlayerCharacterDelegate : public StatBlock {
@@ -43,6 +43,10 @@ public:
 		addNewBuff(b);
 	}
 
+	std::vector<Buff> getBuffList() {
+		return Buffs;
+	}
+
 	virtual void levelUp() = 0;
 	virtual std::string getClassName() = 0;
 
@@ -50,6 +54,7 @@ public:
 	std::unique_ptr<PointWell> MP;
 
 	std::vector<Ability> Abilities;
+	
 
 protected:
 	leveltype CurrentLevel;
@@ -207,8 +212,8 @@ class PlayerCharacter {
 private:
 
 	PlayerCharacterDelegate* pcclass;
-	Equipment* EquipedArmors[(unsigned long long)ARMORSLOTS::NUM_SLOT];
-	Equipment* EquipedWeapons[(unsigned long long)WEAPONTYPES::NUM_SLOT];
+	EquipmentDelegate* EquipedArmors[(unsigned long long)ARMORSLOTS::NUM_SLOT];
+	EquipmentDelegate* EquipedWeapons[(unsigned long long)WEAPONTYPES::NUM_SLOT];
 
 public:
 	
@@ -268,15 +273,16 @@ public:
 		else
 			return 0;
 	}
-	stattype getBaseStr() { return pcclass->getBaseStr(); }
-	stattype getBaseInt() { return pcclass->getBaseInt(); }
-	stattype getBaseAgi() { return pcclass->getBaseAgi(); }
+	stattype getBaseStr() { return pcclass->getBaseStrength(); }
+	stattype getBaseInt() { return pcclass->getBaseIntellect(); }
+	stattype getBaseAgi() { return pcclass->getBaseAgility(); }
 	stattype getBaseArmor() { return pcclass->getBaseArmor(); }
 	stattype getBaseElementRes() { return pcclass->getBaseElementRes(); }
 
-	stattype getTotalStr() { return pcclass->getTotalStr() ; }
-	stattype getTotalInt() { return pcclass->getTotalInt(); }
-	stattype getTotalAgi() { return pcclass->getTotalAgi(); }
+	stattype getTotalStr() { return pcclass->getTotalStrength() ; }
+	stattype getTotalInt() { return pcclass->getTotalIntellect(); }
+	stattype getTotalAgi() { return pcclass->getTotalAgility(); }
+
 	stattype getTotalArmor() { 
 		
 		stattype armor_from_armor = 0;
@@ -293,17 +299,18 @@ public:
 		stattype res_from_armor = 0;
 		for (int i = 0; i < (unsigned long long)ARMORSLOTS::NUM_SLOT; i++) {
 			if (EquipedArmors[i]) {
-				res_from_armor += EquipedArmors[i]->Stats.ElementalResistance;
+				res_from_armor += EquipedArmors[i]->Stats.ElementRes;
 			}
 		}
 
 		return pcclass->getTotalElementRes() + res_from_armor;
 	}
 
-	Equipment* getEquipedArmorAt(unsigned long long i) { return EquipedArmors[i]; }
-	Equipment* getEquipedWeaponAt(unsigned long long i) { return EquipedWeapons[i]; }
+	EquipmentDelegate* getEquipedArmorAt(unsigned long long i) { return EquipedArmors[i]; }
+	EquipmentDelegate* getEquipedWeaponAt(unsigned long long i) { return EquipedWeapons[i]; }
 
 	std::vector<Ability> getAbilities() { return pcclass->Abilities; }
+	std::vector<Buff> getBuffList() { return pcclass->getBuffList(); }
 
 	void gainEXP(exptype gained) { pcclass->gainEXP(gained); }
 	void takeDamage(welltype damage) { pcclass->HP->reduce(damage); }
@@ -311,8 +318,14 @@ public:
 
 	void applyBuff(Buff b) { pcclass->applyBuff(b); }
 
-	bool equip(Equipment* equipment) {
-		Armor* armor = dynamic_cast<Armor*>(equipment);
+	bool equip(Item* equipment) {
+
+		if (!equipment)
+			return false;
+		if (!equipment->GetData())
+			return false;
+
+		Armor* armor = dynamic_cast<Armor*>(equipment->_data);
 		if (armor) {
 
 			unsigned long long arm_slot = (unsigned long long)armor->Slot;
@@ -327,7 +340,7 @@ public:
 			return true;
 		}
 
-		Weapon* weapon = dynamic_cast<Weapon*>(equipment);
+		Weapon* weapon = dynamic_cast<Weapon*>(equipment->_data);
 		if (weapon) {
 			unsigned long long wpn_slot = (unsigned long long)weapon->Slot;
 			if (EquipedWeapons[wpn_slot]) {

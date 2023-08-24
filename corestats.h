@@ -1,32 +1,32 @@
 #pragma once
-#include "statblock.h"
 #include "types.h"
 
+
 struct CoreStats {
-	stattype Strenght = 0;
-	stattype Intellect = 0;
-	stattype Agility = 0;
-	stattype Armor = 0;
-	stattype ElementalResistance = 0;
+    stattype Strength = 0;
+    stattype Intellect = 0;
+    stattype Agility = 0;
+    stattype Armor = 0;
+    stattype ElementRes = 0;
 
-	CoreStats& operator+=(const CoreStats& rhs) {
-		this->Strenght += rhs.Strenght;
-		this->Intellect += rhs.Intellect;
-		this->Agility += rhs.Agility;
-		this->Armor += rhs.Armor;
-		this->ElementalResistance += rhs.ElementalResistance;
+    CoreStats& operator+=(const CoreStats& rhs) {
+        this->Strength += rhs.Strength;
+        this->Intellect += rhs.Intellect;
+        this->Agility += rhs.Agility;
+        this->Armor += rhs.Armor;
+        this->ElementRes += rhs.ElementRes;
+        return *this;
+    };
 
-		return *this;
-	}
-
-	CoreStats& operator-=(const CoreStats& rhs) {
+    CoreStats& operator-=(const CoreStats& rhs) {
+        CoreStats tmp = *this;
 
 
-		if (this->Strenght > rhs.Strenght) {
-			this->Strenght -= rhs.Strenght;
+		if (this->Strength > rhs.Strength) {
+			this->Strength -= rhs.Strength;
 		}
 		else {
-			this->Strenght = 0u;
+			this->Strength = 0u;
 		}
 		if (this->Intellect > rhs.Intellect) {
 			this->Intellect -= rhs.Intellect;
@@ -46,28 +46,22 @@ struct CoreStats {
 		else {
 			this->Armor = 0u;
 		}
-		if (this->ElementalResistance > rhs.ElementalResistance) {
-			this->ElementalResistance -= rhs.ElementalResistance;
+		if (this->ElementRes > rhs.ElementRes) {
+			this->ElementRes -= rhs.ElementRes;
 		}
 		else {
-			this->ElementalResistance = 0u;
+			this->ElementRes = 0u;
 		}
-		/*this->Strenght -= rhs.Strenght;
-		this->Intellect -= rhs.Intellect;
-		this->Agility -= rhs.Agility;
-		this->Armor -= rhs.Armor;
-		this->ElementalResistance -= rhs.ElementalResistance;*/
 
-		return *this;
-	}
+        return *this;
+    };
 
-	CoreStats& operator=(const stattype& rhs) {
-		this->Strenght = rhs;
-		this->Intellect = rhs;
-		this->Agility = rhs;
-		this->Armor = rhs;
-		this->ElementalResistance = rhs;
-
-		return *this;
-	}
+    CoreStats& operator=(const stattype& rhs) {
+        this->Strength = rhs;
+        this->Intellect = rhs;
+        this->Agility = rhs;
+        this->Armor = rhs;
+        this->ElementRes = rhs;
+        return *this;
+    }
 };
