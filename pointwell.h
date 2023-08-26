@@ -1,65 +1,58 @@
 #pragma once
-#include <cstdint>
 #include "types.h"
-
-
 class PointWell {
 public:
-	PointWell() 
-		: Max(1u), Current(1u) {}
-	
+    // returns true if set successfully
+    bool setMax(welltype new_max) {
+        if (new_max < 1)
+            return false;
 
-	PointWell(welltype mHP, welltype cHP) {
-		Max = mHP;
-		Current = cHP;
+        MaxWell = new_max;
 
-		if (Current > Max)
-			Current = Max;
-	}
+        if (CurrentFullness > MaxWell)
+            CurrentFullness = MaxWell;
 
-	bool setMax(welltype newMax) {
-		if (newMax < 1) {
-			return false;
-		}
+        return true;
+    }
 
-		Max = newMax;
+    welltype getMax() {
+        return MaxWell;
+    }
 
-		if (Current > Max){
-			Current = Max;
-		}
+    welltype getCurrent() {
+        return CurrentFullness;
+    }
 
-		return true;
-	}
+    bool isFull() { return (CurrentFullness == MaxWell); }
 
-	welltype getMax() {
-		return Max;
-	}
+    void reduceCurrent(welltype damage) {
+        if (damage > CurrentFullness) {
+            CurrentFullness = 0;
+            return;
+        }
 
-	welltype getCurrent() {
-		return Current;
-	}
+        CurrentFullness -= damage;
+    }
 
-	void reduce(welltype amountReduced) {
-		if (amountReduced > Current) {
-			Current = 0;
-			return;
-		}
+    void increaseCurrent(welltype amount) {
+        if (amount + CurrentFullness > MaxWell) {
+            CurrentFullness = MaxWell;
+            return;
+        }
 
-		Current -= amountReduced;
-	}
+        CurrentFullness += amount;
+    }
 
-	void increase(welltype amountIncreased) {
-		if (amountIncreased + Current > Max) {
-			Current = Max;
-			return;
-		}
+    PointWell() { CurrentFullness = 1; MaxWell = 1; }
 
-		Current += amountIncreased;
-	}
+    PointWell(welltype c, welltype m) {
+        CurrentFullness = c;
+        MaxWell = m;
+        if (CurrentFullness > MaxWell)
+            CurrentFullness = MaxWell;
+    }
 
 private:
-	//hptype ShieldHP;
-	welltype Current;
-	welltype Max;
-
+    welltype CurrentFullness;
+    welltype MaxWell;
 };

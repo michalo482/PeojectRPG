@@ -1,361 +1,427 @@
 #pragma once
 #include "types.h"
-#include <cstdint>
-#include <memory>
-#include <iostream>
-#include <string>
-#include <vector>
 #include "statblock.h"
 #include "pointwell.h"
 #include "ability.h"
 #include "item.h"
-
+#include <memory>
+#include <string>
+#include <vector>
 
 class PlayerCharacterDelegate : public StatBlock {
-
 public:
-	static const exptype EXPTOLEVEL2 = 100u;
+    static const exptype LEVEL2AT = 100u;
 
-	PlayerCharacterDelegate() :
-		CurrentLevel(1u), CurrentEXP(0u), EXPToNextLevel(EXPTOLEVEL2), StatBlock(0u, 0u, 0u) {
-		HP = std::make_unique<PointWell>();
-	}
+    PlayerCharacterDelegate() : StatBlock(0u, 0u) {
+        CurrentLevel = (leveltype)1u;
+        CurrentEXP = (exptype)0u;
+        EXPToNextLevel = LEVEL2AT;
+        HP = std::make_unique<PointWell>(1u, 1u);
+    }
 
-	void gainEXP(exptype gainedExp) {
-		CurrentEXP += gainedExp;
-		while (checkIfLevelUp()) {}
-	}
+    void gainEXP(exptype gained_exp) {
+        CurrentEXP += gained_exp;
+        while (check_if_leveled()) {}
+    }
 
-	leveltype getLevel() {
-		return CurrentLevel;
-	}
+    leveltype getLevel() {
+        return CurrentLevel;
+    }
 
-	exptype getCurrentEXP() {
-		return CurrentEXP;
-	}
+    exptype getCurrentEXP() {
+        return CurrentEXP;
+    }
 
-	exptype getEXPToNextLevel() {
-		return EXPToNextLevel;
-	}
+    exptype getEXPToNextLevel() {
+        return EXPToNextLevel;
+    }
 
-	void applyBuff(Buff b) {
-		
-		addNewBuff(b);
-	}
+    void applyBuff(Buff b) {
+        addNewBuff(b);
+    }
 
-	std::vector<Buff> getBuffList() {
-		return Buffs;
-	}
+    std::vector<Buff> getBuffList() {
+        return Buffs;
+    }
 
-	virtual void levelUp() = 0;
-	virtual std::string getClassName() = 0;
+    virtual void LevelUp() = 0;
+    virtual std::string getClassName() = 0;
 
-	std::unique_ptr<PointWell> HP;
-	std::unique_ptr<PointWell> MP;
+    std::unique_ptr<PointWell> HP;
+    std::unique_ptr<PointWell> MP;
 
-	std::vector<Ability> Abilities;
-	
+    std::vector<Ability> Abilities;
+    std::vector<Item*> Backpack;
 
 protected:
-	leveltype CurrentLevel;
-	exptype CurrentEXP;
-	exptype EXPToNextLevel;
+    leveltype CurrentLevel;
+    exptype CurrentEXP;
+    exptype EXPToNextLevel;
 
-	bool checkIfLevelUp() {		
-		static const leveltype levelmultipler = 2u;
-
-		if (CurrentEXP >= EXPToNextLevel) {
-			CurrentLevel++;
-			levelUp();
-			EXPToNextLevel *= levelmultipler;
-			return true;
-		}
-		return false;
-		
-	}
+    bool check_if_leveled() {
+        static const leveltype LEVELSCALAR = 2u;
+        if (CurrentEXP >= EXPToNextLevel) {
+            CurrentLevel++;
+            LevelUp();
+            EXPToNextLevel *= LEVELSCALAR;
+            return true;
+        }
+        return false;
+    }
 };
 
 #define PCCONSTRUCT \
 HP->setMax(BASEHP);\
-HP->increase(BASEHP);\
-if (MP) {\
- MP->setMax(BASEMP);\
- MP->increase(BASEMP);\
+HP->increaseCurrent(BASEHP);\
+if (MP) { \
+  MP->setMax(BASEMP); \
+  MP->increaseCurrent(BASEMP); \
 }\
 increaseStats(BASESTR, BASEINT, BASEAGI);
 
-
 #define LEVELUP \
 HP->setMax((welltype)((BASEHP / 2.f) + HP->getMax()));\
-HP->increase((welltype)((BASEHP / 2.f)));\
+HP->increaseCurrent((welltype)(BASEHP / 2.f));\
 if (MP) {\
- MP->setMax((welltype)((BASEMP / 2.f) + MP->getMax()));\
- MP->increase((welltype)((BASEMP / 2.f)));\
+  MP->setMax((welltype)((BASEMP / 2.f) + HP->getMax()));\
+  MP->increaseCurrent((welltype)(BASEMP / 2.f));\
 }\
-increaseStats(((stattype)((BASESTR + 1u) / 2.f)), ((stattype)((BASEINT + 1u) / 2.f)), ((stattype)((BASEAGI + 1u) / 2.f)));
-
-
-//#define CHARACTERCLASS(classname, basehp, basestr, baseint, baseagi)\
-//class classname : public PlayerCharacterDelegate {\
-//public:\
-//	static const welltype BASEHP = (welltype)basehp;\
-//	static const stattype BASESTR = (stattype)basestr;\
-//	static const stattype BASEINT = (stattype)baseint;\
-//	static const stattype BASEAGI = (stattype)baseagi;\
-//	classname() PCCONSTRUCT\
-//		std::string getClassName() override {return std::string(#classname);\
-//	}\
-//private:\
-//	LEVELUP\
-//};
-
-//CHARACTERCLASS(Cleric, 14, 3, 3, 1);
-//CHARACTERCLASS(Rogue, 14, 3, 3, 5);
-//CHARACTERCLASS(Warrior, 20, 5, 1, 2);
-//CHARACTERCLASS(Wizard, 10, 2, 4, 1);
+increaseStats((stattype)((BASESTR + 1u) / 2.f), (stattype)((BASEINT + 1u) / 2.f), (stattype)((BASEAGI + 1u) / 2.f));
 
 class Cleric : public PlayerCharacterDelegate {
 public:
-	static const welltype BASEHP = (welltype)14u;
-	static const welltype BASEMP = (welltype)10u;
-	static const stattype BASESTR = (stattype)3u;
-	static const stattype BASEINT = (stattype)5u;
-	static const stattype BASEAGI = (stattype)1u;
+    static const welltype BASEHP = (welltype)14u;
+    static const welltype BASEMP = (welltype)10u;
+    static const stattype BASESTR = (stattype)3u;
+    static const stattype BASEINT = (stattype)5u;
+    static const stattype BASEAGI = (stattype)1u;
+    std::string getClassName() override { return std::string("Cleric"); }
+    Cleric() : PlayerCharacterDelegate() {
+        MP = std::make_unique<PointWell>(BASEMP, BASEMP);  // be sure to init before PCCONSTRUCT MACRO
+        PCCONSTRUCT
 
-	std::string getClassName() override {
-		return std::string("Cleric");
-	}
-
-	Cleric() : PlayerCharacterDelegate() {
-		MP = std::make_unique<PointWell>();
-
-		PCCONSTRUCT
-			
-		Abilities.emplace_back("Heal", 2u, 1u, ABILITYTARGET::ALLY, ABILITYSCALER::INT, 2u);
-	}
-
+            Abilities.emplace_back("Heal", 2u, 1u, ABILITYTARGET::ALLY, 2u, ABILITYSCALER::INT);
+    }
 private:
-	void levelUp() override {
-		LEVELUP
-			if (CurrentLevel == 2) {
-				Abilities.emplace_back("Smite", 2u, 1u, ABILITYTARGET::ENEMY, ABILITYSCALER::INT, 4u);
-		}
-	}
+    void LevelUp() override {
+        LEVELUP
+            if (CurrentLevel == 2) {
+                Abilities.emplace_back("Smite", 2u, 1u, ABILITYTARGET::ENEMY, 2u, ABILITYSCALER::INT);
+            }
+    }
 };
 
 class Wizard : public PlayerCharacterDelegate {
 public:
-	static const welltype BASEHP = (welltype)10;
-	static const welltype BASEMP = (welltype)13;
-	static const stattype BASESTR = (stattype)1;
-	static const stattype BASEINT = (stattype)6;
-	static const stattype BASEAGI = (stattype)2;
-
-	std::string getClassName() override {
-		return std::string("Wizard");
-	}
-
-	Wizard() : PlayerCharacterDelegate() {
-		MP = std::make_unique<PointWell>();
-
-		PCCONSTRUCT
-
-			Abilities.emplace_back("Firebolt", 2u, 1u, ABILITYTARGET::ENEMY, ABILITYSCALER::INT, 4u);
-	}
-
+    static const welltype BASEHP = (welltype)10u;
+    static const welltype BASEMP = (welltype)14u;
+    static const stattype BASESTR = (stattype)1u;
+    static const stattype BASEINT = (stattype)8u;
+    static const stattype BASEAGI = (stattype)2u;
+    std::string getClassName() override { return std::string("Wizard"); }
+    Wizard() : PlayerCharacterDelegate() {
+        MP = std::make_unique<PointWell>(BASEMP, BASEMP);  // be sure to init before PCCONSTRUCT MACRO
+        PCCONSTRUCT
+            Abilities.emplace_back("Firebolt", 2u, 1u, ABILITYTARGET::ENEMY, 4u, ABILITYSCALER::INT);
+    }
 private:
-	void levelUp() override {
-		LEVELUP
-			if (CurrentLevel == 2) {
-				Abilities.emplace_back("Icebolt", 3u, 1u, ABILITYTARGET::ENEMY, ABILITYSCALER::INT, 6u);
+    void LevelUp() override {
+        LEVELUP
+            if (CurrentLevel == 2) {
+                Abilities.emplace_back("IceBolt", 3u, 1u, ABILITYTARGET::ENEMY, 6u, ABILITYSCALER::INT);
 
-				increaseStats(0, 1);
+                MP->setMax(1u + MP->getMax());
+                MP->increaseCurrent(1u);
 
-				MP->setMax(1u + MP->getMax());
-				MP->increase(1u);
-
-			}
-	}
+                increaseStats(0, 1);
+            }
+    }
 };
-
 
 class Warrior : public PlayerCharacterDelegate {
 public:
-	static const welltype BASEHP = (welltype)18;
-	static const welltype BASEMP = (welltype)0;
-	static const stattype BASESTR = (stattype)6;
-	static const stattype BASEINT = (stattype)1;
-	static const stattype BASEAGI = (stattype)2;
+    static const welltype BASEHP = (welltype)18u;
+    static const welltype BASEMP = (welltype)0u;
+    static const stattype BASESTR = (stattype)6u;
+    static const stattype BASEINT = (stattype)2u;
+    static const stattype BASEAGI = (stattype)2u;
+    std::string getClassName() override { return std::string("Warrior"); }
+    Warrior() : PlayerCharacterDelegate() {
+        //MP = std::make_unique<PointWell>(BASEMP, BASEMP);  // be sure to init before PCCONSTRUCT MACRO
+        PCCONSTRUCT
 
-	std::string getClassName() override {
-		return std::string("Warrior");
-	}
-
-	Warrior() : PlayerCharacterDelegate() {
-		//MP = std::make_unique<PointWell>();
-
-		PCCONSTRUCT		
-	}
-
+    }
 private:
-	void levelUp() override {
-		LEVELUP
-			if (CurrentLevel == 2) {
-				Abilities.emplace_back("PowerAttack", 0u, 3u, ABILITYTARGET::ENEMY, ABILITYSCALER::STR, 4u);
+    void LevelUp() override {
+        LEVELUP
+            if (CurrentLevel == 2) {
+                Abilities.emplace_back("PowerAttack", 0u, 3u, ABILITYTARGET::ENEMY, 4u, ABILITYSCALER::STR);
+            }
+    }
+};
 
-			}
-	}
+class Rogue : public PlayerCharacterDelegate {
+public:
+    static const welltype BASEHP = (welltype)12u;
+    static const welltype BASEMP = (welltype)0u;
+    static const stattype BASESTR = (stattype)3u;
+    static const stattype BASEINT = (stattype)3u;
+    static const stattype BASEAGI = (stattype)6u;
+    std::string getClassName() override { return std::string("Rogue"); }
+    Rogue() : PlayerCharacterDelegate() {
+        //MP = std::make_unique<PointWell>(BASEMP, BASEMP);  // be sure to init before PCCONSTRUCT MACRO
+        PCCONSTRUCT
+
+    }
+private:
+    void LevelUp() override {
+        LEVELUP
+            if (CurrentLevel == 2) {
+                Abilities.emplace_back("PreciseAttack", 0u, 3u, ABILITYTARGET::ENEMY, 6u, ABILITYSCALER::AGI);
+            }
+    }
 };
 
 
 class PlayerCharacter {
 private:
-
-	PlayerCharacterDelegate* pcclass;
-	EquipmentDelegate* EquipedArmors[(unsigned long long)ARMORSLOTS::NUM_SLOT];
-	EquipmentDelegate* EquipedWeapons[(unsigned long long)WEAPONTYPES::NUM_SLOT];
+    PlayerCharacterDelegate* pcclass;
+    EquipmentDelegate* EquippedArmor[(unsigned long long)ARMORSLOT::NUM_SLOTS];
+    EquipmentDelegate* EquippedWeapons[(unsigned long long)WEAPONSLOT::NUM_SLOTS];
 
 public:
-	
-	PlayerCharacter() = delete;
-	PlayerCharacter(const PlayerCharacter&) = delete;
-	PlayerCharacter(const PlayerCharacter&&) = delete;
-	
-	PlayerCharacter(PlayerCharacterDelegate* pc) 
-		: pcclass(pc){
+    PlayerCharacter(PlayerCharacterDelegate* pc) : pcclass(pc) {
+        auto i = 0;
+        for (i = 0; i < (unsigned long long)ARMORSLOT::NUM_SLOTS; i++) {
+            EquippedArmor[i] = nullptr;
+        }
+        for (i = 0; i < (unsigned long long)WEAPONSLOT::NUM_SLOTS; i++) {
+            EquippedWeapons[i] = nullptr;
+        }
+    }
+    ~PlayerCharacter() {
+        delete pcclass;
+        pcclass = nullptr;
+        auto i = 0;
+        for (i = 0; i < (unsigned long long)ARMORSLOT::NUM_SLOTS; i++) {
+            if (EquippedArmor[i]) {
+                delete EquippedArmor[i];
+                EquippedArmor[i] = nullptr;
+            }
+        }
+        for (i = 0; i < (unsigned long long)WEAPONSLOT::NUM_SLOTS; i++) {
+            if (EquippedWeapons[i]) {
+                delete EquippedWeapons[i];
+                EquippedWeapons[i] = nullptr;
+            }
+        }
+    }
 
-		for (int i = 0; i < (unsigned long long)ARMORSLOTS::NUM_SLOT; i++) {
-			EquipedArmors[i] = nullptr;
-		}
 
-		for (int i = 0; i < (unsigned long long)WEAPONTYPES::NUM_SLOT; i++) {
-			EquipedWeapons[i] = nullptr;
-		}
-	
-	}
+    // Getters
+    std::string getClassName() { return pcclass->getClassName(); }
+    leveltype getLevel() { return pcclass->getLevel(); }
+    exptype getCurrentEXP() { return pcclass->getCurrentEXP(); }
+    exptype getEXPToNextLevel() { return pcclass->getEXPToNextLevel(); }
+    welltype getCurrentHP() { return pcclass->HP->getCurrent(); }
+    welltype getMaxHP() { return pcclass->HP->getMax(); }
 
-	~PlayerCharacter() { 
-		delete pcclass;
-		pcclass = nullptr;
+    welltype getCurrentMP() {
+        if (pcclass->MP)
+            return pcclass->MP->getCurrent();
+        else
+            return 0;
+    }
+    welltype getMaxMP() {
+        if (pcclass->MP)
+            return pcclass->MP->getMax();
+        else
+            return 0;
+    }
 
-		for (int i = 0; i < (unsigned long long)ARMORSLOTS::NUM_SLOT; i++) {
-			if (EquipedArmors[i]) {
-				delete EquipedArmors[i];
-				EquipedArmors[i] = nullptr;
-			}
-		}
+    stattype getBaseStrength() { return pcclass->getBaseStrength(); }
+    stattype getBaseIntellect() { return pcclass->getBaseIntellect(); }
+    stattype getBaseAgility() { return pcclass->getBaseAgility(); }
+    stattype getBaseArmor() { return pcclass->getBaseArmor(); }
+    stattype getBaseElementRes() { return pcclass->getBaseElementRes(); }
 
-		for (int i = 0; i < (unsigned long long)WEAPONTYPES::NUM_SLOT; i++) {
-			if (EquipedWeapons[i]) {
-				delete EquipedWeapons[i];
-				EquipedWeapons[i] = nullptr;
-			} 
-		}
-	}
+    stattype getTotalStrength() {
+        stattype str_from_armor = 0;
+        for (auto i = 0; i < (unsigned long long)ARMORSLOT::NUM_SLOTS; i++) {
+            if (EquippedArmor[i]) {
+                str_from_armor += EquippedArmor[i]->Stats.Strength;
+            }
+        }
+        stattype str_from_weapons = 0;
+        for (auto i = 0; i < (unsigned long long)WEAPONSLOT::NUM_SLOTS; i++) {
+            if (EquippedWeapons[i]) {
+                str_from_weapons += EquippedWeapons[i]->Stats.Strength;
+            }
+        }
+        return pcclass->getTotalStrength() + str_from_armor + str_from_weapons;
+    }
 
-	std::string getClassName() { return pcclass->getClassName(); }
-	leveltype getLevel() { return pcclass->getLevel(); }
-	exptype getCurrentEXP() { return pcclass->getCurrentEXP(); }
-	exptype getEXPToNextLevel() { return pcclass->getEXPToNextLevel(); }
-	welltype getMaxHP() { return pcclass->HP->getMax(); }
+    stattype getTotalIntellect() {
+        stattype int_from_armor = 0;
+        for (auto i = 0; i < (unsigned long long)ARMORSLOT::NUM_SLOTS; i++) {
+            if (EquippedArmor[i]) {
+                int_from_armor += EquippedArmor[i]->Stats.Intellect;
+            }
+        }
+        stattype int_from_weapons = 0;
+        for (auto i = 0; i < (unsigned long long)WEAPONSLOT::NUM_SLOTS; i++) {
+            if (EquippedWeapons[i]) {
+                int_from_weapons += EquippedWeapons[i]->Stats.Intellect;
+            }
+        }
+        return pcclass->getTotalIntellect() + int_from_armor + int_from_weapons;
+    }
+    stattype getTotalAgility() {
+        stattype agil_from_armor = 0;
+        for (auto i = 0; i < (unsigned long long)ARMORSLOT::NUM_SLOTS; i++) {
+            if (EquippedArmor[i]) {
+                agil_from_armor += EquippedArmor[i]->Stats.Intellect;
+            }
+        }
+        stattype agil_from_weapons = 0;
+        for (auto i = 0; i < (unsigned long long)WEAPONSLOT::NUM_SLOTS; i++) {
+            if (EquippedWeapons[i]) {
+                agil_from_weapons += EquippedWeapons[i]->Stats.Agility;
+            }
+        }
+        return pcclass->getTotalAgility() + agil_from_armor + agil_from_weapons;
+    }
+    stattype getTotalArmor() {
+        // get all armor from equipped armor
+        stattype armor_from_armor = 0;
+        for (auto i = 0; i < (unsigned long long)ARMORSLOT::NUM_SLOTS; i++) {
+            if (EquippedArmor[i]) {
+                armor_from_armor += EquippedArmor[i]->Stats.Armor;
+            }
+        }
+        stattype armor_from_weapons = 0;
+        for (auto i = 0; i < (unsigned long long)WEAPONSLOT::NUM_SLOTS; i++) {
+            if (EquippedWeapons[i]) {
+                armor_from_weapons += EquippedWeapons[i]->Stats.Armor;
+            }
+        }
+        return pcclass->getTotalArmor() + armor_from_armor + armor_from_weapons;
+    }
 
-	welltype getMaxMP() { 
-		if (pcclass->MP)
-			return pcclass->MP->getMax();
-		else
-			return 0;
-	}
-	welltype getCurrentHP() { return pcclass->HP->getCurrent(); }
+    stattype getTotalElementRes() {
+        stattype resist_from_armor = 0;
+        for (auto i = 0; i < (unsigned long long)ARMORSLOT::NUM_SLOTS; i++) {
+            if (EquippedArmor[i]) {
+                resist_from_armor += EquippedArmor[i]->Stats.ElementRes;
+            }
+        }
+        stattype elres_from_weapons = 0;
+        for (auto i = 0; i < (unsigned long long)WEAPONSLOT::NUM_SLOTS; i++) {
+            if (EquippedWeapons[i]) {
+                elres_from_weapons += EquippedWeapons[i]->Stats.ElementRes;
+            }
+        }
+        return pcclass->getTotalElementRes() + resist_from_armor + elres_from_weapons;
+    }
 
-	welltype getCurrentMP() { 
-		if (pcclass->MP)
-			return pcclass->MP->getCurrent();
-		else
-			return 0;
-	}
-	stattype getBaseStr() { return pcclass->getBaseStrength(); }
-	stattype getBaseInt() { return pcclass->getBaseIntellect(); }
-	stattype getBaseAgi() { return pcclass->getBaseAgility(); }
-	stattype getBaseArmor() { return pcclass->getBaseArmor(); }
-	stattype getBaseElementRes() { return pcclass->getBaseElementRes(); }
+    std::vector<Ability> getAbilityList() { return pcclass->Abilities; }
+    std::vector<Buff> getBuffList() { return pcclass->getBuffList(); }
 
-	stattype getTotalStr() { return pcclass->getTotalStrength() ; }
-	stattype getTotalInt() { return pcclass->getTotalIntellect(); }
-	stattype getTotalAgi() { return pcclass->getTotalAgility(); }
+    EquipmentDelegate* getEquippedArmorAt(unsigned long long i) {
+        return (dynamic_cast<Armor*>(EquippedArmor[i]));
+    }
 
-	stattype getTotalArmor() { 
-		
-		stattype armor_from_armor = 0;
-		for (int i = 0; i < (unsigned long long)ARMORSLOTS::NUM_SLOT; i++) {
-			if (EquipedArmors[i]) {
-				armor_from_armor += EquipedArmors[i]->Stats.Armor;
-			}
-		}
-		
-		return pcclass->getTotalArmor() + armor_from_armor;
-	}
-	stattype getTotalElementRes() { 
-		
-		stattype res_from_armor = 0;
-		for (int i = 0; i < (unsigned long long)ARMORSLOTS::NUM_SLOT; i++) {
-			if (EquipedArmors[i]) {
-				res_from_armor += EquipedArmors[i]->Stats.ElementRes;
-			}
-		}
+    EquipmentDelegate* getEquippedWeaponAt(unsigned long long i) {
+        return (dynamic_cast<Weapon*>(EquippedWeapons[i]));
+    }
 
-		return pcclass->getTotalElementRes() + res_from_armor;
-	}
+    // Modifiers
+    void gainEXP(exptype amt) { pcclass->gainEXP(amt); }
+    void takeDamage(welltype amt) { pcclass->HP->reduceCurrent(amt); }
+    void heal(welltype amt) { pcclass->HP->increaseCurrent(amt); }
 
-	EquipmentDelegate* getEquipedArmorAt(unsigned long long i) { return EquipedArmors[i]; }
-	EquipmentDelegate* getEquipedWeaponAt(unsigned long long i) { return EquipedWeapons[i]; }
+    void applyBuff(Buff buff) {
+        pcclass->applyBuff(buff);
+    }
 
-	std::vector<Ability> getAbilities() { return pcclass->Abilities; }
-	std::vector<Buff> getBuffList() { return pcclass->getBuffList(); }
+    // todo: update once we have an inventory
+    bool equip(Item* item_to_equip) {
+        if (!item_to_equip)
+            return false;
+        if (!item_to_equip->GetData())
+            return false;
 
-	void gainEXP(exptype gained) { pcclass->gainEXP(gained); }
-	void takeDamage(welltype damage) { pcclass->HP->reduce(damage); }
-	void heal(welltype amt) { pcclass->HP->increase(amt); }
+        Armor* armor = dynamic_cast<Armor*>(item_to_equip->_data);
+        if (armor) {
+            // equip armor
+            unsigned long long slot_num = (unsigned long long)armor->Slot;
 
-	void applyBuff(Buff b) { pcclass->applyBuff(b); }
+            if (EquippedArmor[slot_num]) {
+                delete EquippedArmor[slot_num];  // todo: move to invetory instead of delete
+                EquippedArmor[slot_num] = nullptr;
+                EquippedArmor[slot_num] = armor;
+            }
+            else {
+                EquippedArmor[slot_num] = armor;
+            }
+            return true;
+        }
 
-	bool equip(Item* equipment) {
+        Weapon* weapon = dynamic_cast<Weapon*>(item_to_equip->_data);
+        if (weapon) {
+            // equip weapon
+            unsigned long long slot_num = (unsigned long long)weapon->Slot;
 
-		if (!equipment)
-			return false;
-		if (!equipment->GetData())
-			return false;
+            if (EquippedWeapons[slot_num]) {
+                delete EquippedWeapons[slot_num];  // todo: move to invetory instead of delete
+                EquippedWeapons[slot_num] = nullptr;
+                EquippedWeapons[slot_num] = weapon;
+            }
+            else {
+                EquippedWeapons[slot_num] = weapon;
+            }
+            return true;
+        }
 
-		Armor* armor = dynamic_cast<Armor*>(equipment->_data);
-		if (armor) {
+        return false;
 
-			unsigned long long arm_slot = (unsigned long long)armor->Slot;
-			if (EquipedArmors[arm_slot]) {
-				delete EquipedArmors[arm_slot];
-				EquipedArmors[arm_slot] = nullptr;
-				EquipedArmors[arm_slot] = armor;
-			}
-			else {
-				EquipedArmors[arm_slot] = armor;
-			}
-			return true;
-		}
+    }
 
-		Weapon* weapon = dynamic_cast<Weapon*>(equipment->_data);
-		if (weapon) {
-			unsigned long long wpn_slot = (unsigned long long)weapon->Slot;
-			if (EquipedWeapons[wpn_slot]) {
-				delete EquipedWeapons[wpn_slot];
-				EquipedWeapons[wpn_slot] = nullptr;
-				EquipedWeapons[wpn_slot] = weapon;
-			}
-			else {
-				EquipedWeapons[wpn_slot] = weapon;
-			}
-			return true;
-		}
-		return false;
-	}
+    // todo: update once we have an inventory
+    bool use(Item* item_to_use) {
+        if (!item_to_use)
+            return false;
+        if (!item_to_use->GetData())
+            return false;
 
+        Potion* potion = dynamic_cast<Potion*>(item_to_use->_data);
+        if (potion) {
+            // apply buff if it has one
+            if (potion->buff) {
+                applyBuff(*potion->buff);
+            }
+
+            // if max health and trying to use a heal potion, don't use it
+            if (pcclass->HP->isFull() && !potion->buff)
+                return false; // don't use the potion
+
+            // increase hp by the heal amount (could be 0 and that's fine)
+            pcclass->HP->increaseCurrent(potion->HealAmount);
+
+            // we used the potion, reduce quantity
+            potion->Quantity--;
+
+            if (potion->Quantity == 0) {
+                delete potion;
+            }
+            return true;
+        }
+
+        return false;
+    }
+
+    // deleted constructors
+    PlayerCharacter() = delete;
+    PlayerCharacter(const PlayerCharacter&) = delete;
+    PlayerCharacter(const PlayerCharacter&&) = delete;
 };
-
-
