@@ -4,50 +4,19 @@
 
 int main() {
 
-    // just test code for now, replace 'Warrior' with your class to test
+  
     PlayerCharacter p1(new Warrior());
 
 
+    
 
-    {
-        CoreStats plate_armor_stats;
-        plate_armor_stats.Armor = 5;
-        plate_armor_stats.ElementRes = 3;
-
-        Item* FullPlateMail = ItemManager::CreateArmor("Shiny Plate Armor", plate_armor_stats, ARMORSLOT::CHEST);
-        if (p1.equip(FullPlateMail)) {
-            std::cout << "equip success!\n";
-        }
-        else {
-            std::cout << "equip failed!\n";
-        }
-    }
-
-    {
-        CoreStats leather_helm_stats;
-        leather_helm_stats.Armor = 1;
-        leather_helm_stats.ElementRes = 1;
-
-        Item* LeatherHelm = ItemManager::CreateArmor("Plain Leather Helmet", leather_helm_stats, ARMORSLOT::HELMET);
-        if (p1.equip(LeatherHelm)) {
-            std::cout << "equip success!\n";
-        }
-        else {
-            std::cout << "equip failed!\n";
-        }
-    }
-
-    {
+        Item* FullPlateMail = ItemManager::CreateArmor("Shiny Plate Armor", CoreStats(0, 0, 0, 5, 3), ARMORSLOT::CHEST);
+        Item* LeatherArmor = ItemManager::CreateArmor("Plain Leather Armor", CoreStats(0, 0, 0, 2, 1), ARMORSLOT::CHEST);
         Item* LongSword = ItemManager::CreateWeapon("Long Sword", CoreStats(), WEAPONSLOT::MELEE, 3, 9);
-        if (p1.equip(LongSword)) {
-            std::cout << "equip success!\n";
-        }
-        else {
-            std::cout << "equip failed!\n";
-        }
-    }
-
-
+  
+        ItemManager::Equip(FullPlateMail, &p1);
+        ItemManager::Equip(LeatherArmor, &p1);
+        ItemManager::Equip(LongSword, &p1);
     for (int i = 0; i < 2; i++) {
         std::cout
             << p1.getClassName()
@@ -107,11 +76,19 @@ int main() {
 
 
     Item* HealPotion = ItemManager::CreatePotion("Minor Heal Potion", 3u, 3u);
+    ItemManager::MoveToBackpack(HealPotion, &p1);
 
-
-    p1.use(HealPotion);
+    ItemManager::Use(HealPotion, &p1);
 
     std::cout << "health after using potion: " << p1.getCurrentHP() << '/' << p1.getMaxHP() << '\n';
+
+    ItemManager::MoveToBackpack(ItemManager::CreateWeapon("Rusty Hand Axe", CoreStats(), WEAPONSLOT::MELEE, 2, 4), &p1);
+
+    auto inv = p1.getBackpackList();
+    std::cout << "-Inventory: \n";
+    for (auto& it : inv) {
+        std::cout << *it << ", ";
+    }
 
 
 

@@ -84,7 +84,8 @@ private:
 
 
 
-// use this one in your runtime code
+#include <iostream>  
+
 class Item {
 public:
     const ItemDelegate* GetData() { return _data; }
@@ -94,9 +95,28 @@ public:
             _data = nullptr;
         }
     }
+    bool getMarkedForDeletion() const { return marked_for_deletion; }
 private:
     ItemDelegate* _data;
+    bool marked_for_deletion = false;
     Item(ItemDelegate* item) : _data(item) {}
     friend class ItemManager;
     friend class PlayerCharacter;
+
+    friend std::ostream& operator<<(std::ostream& os, const Item& t) {
+        Armor* tmp_cast = dynamic_cast<Armor*>(t._data);
+        if (tmp_cast) {
+            return os << tmp_cast->Name << "(Armor: " << tmp_cast->Stats.Armor << ", Resist: " << tmp_cast->Stats.ElementRes << ')';
+        }
+        Weapon* tmp_cast2 = dynamic_cast<Weapon*>(t._data);
+        if (tmp_cast2) {
+            return  os << tmp_cast2->Name << "(Damage: " << tmp_cast2->MinDamage << '-' << tmp_cast2->MaxDamage << ')';
+        }
+        Potion* tmp_cast3 = dynamic_cast<Potion*>(t._data);
+        if (tmp_cast3) {
+            return os << tmp_cast3->Name << '(' << tmp_cast3->Quantity << ')';
+        }
+        return os;
+    }
+
 };

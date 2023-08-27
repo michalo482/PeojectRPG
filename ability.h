@@ -10,8 +10,8 @@ struct Ability {
         Name(name), Cost(cost), Cooldown(cd), Target(t), HpEffect(hpe), Scaler(s) {}
 
     std::string Name = "unnamed";
-    uint32_t Cost = 0;  // assume mp if there is a cost
-    uint32_t Cooldown = 1;  // number of rounds you have to wait before using it again
+    uint32_t Cost = 0; 
+    uint32_t Cooldown = 1;  
     ABILITYTARGET Target = ABILITYTARGET::SELF;
     uint32_t HpEffect = 1;
     ABILITYSCALER Scaler = ABILITYSCALER::NONE;

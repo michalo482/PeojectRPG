@@ -2,7 +2,7 @@
 #include "types.h"
 class PointWell {
 public:
-    // returns true if set successfully
+   
     bool setMax(welltype new_max) {
         if (new_max < 1)
             return false;
