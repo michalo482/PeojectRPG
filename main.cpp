@@ -1,10 +1,10 @@
 #include <iostream>
-#include "playercharacter.h"
-#include "itemManager.h"
+#include "include/playerCharacter.h"
+#include "include/itemManager.h"
 
 int main() {
 
-  
+  /*
     PlayerCharacter p1(new Warrior());
 
 
@@ -92,5 +92,5 @@ int main() {
 
 
 
-    return 0;
+    return 0;*/
 }

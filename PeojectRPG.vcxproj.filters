@@ -23,31 +23,31 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="pointwell.h">
+    <ClInclude Include="include\pointwell.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="statblock.h">
+    <ClInclude Include="include\statblock.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="playerCharacter.h">
+    <ClInclude Include="include\playerCharacter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ability.h">
+    <ClInclude Include="include\ability.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="buff.h">
+    <ClInclude Include="include\buff.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="corestats.h">
+    <ClInclude Include="include\corestats.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="types.h">
+    <ClInclude Include="include\types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="item.h">
+    <ClInclude Include="include\item.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="itemManager.h">
+    <ClInclude Include="include\itemManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
