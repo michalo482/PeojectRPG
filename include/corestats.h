@@ -3,23 +3,25 @@
 
 
 struct CoreStats {
-    stattype Strength = 0;
-    stattype Intellect = 0;
-    stattype Agility = 0;
-    stattype Armor = 0;
-    stattype ElementRes = 0;
+    stattype Strength;
+    stattype Intellect;
+    stattype Agility;
+    stattype Armor;
+    stattype ElementRes;
 
-	CoreStats() {
-	stattype Strength = 0;
-	stattype Intellect = 0;
-	stattype Agility = 0;
-	stattype Armor = 0;
-	stattype ElementRes = 0;
-	}
+    CoreStats() {
+        Strength = 0;
+        Intellect = 0;
+        Agility = 0;
+        Armor = 0;
+        ElementRes = 0;
+    }
 
-	CoreStats(stattype s, stattype i, stattype ag, stattype arm, stattype eres) 
-		: Strength(s), Intellect(i), Agility(ag), Armor(arm), ElementRes(eres) {}
+    CoreStats(stattype s, stattype i, stattype ag, stattype arm, stattype eres)
+        : Strength(s), Intellect(i), Agility(ag), Armor(arm), ElementRes(eres) {
+    }
 
+    CoreStats(stattype all) : Strength(all), Intellect(all), Agility(all), Armor(all), ElementRes(all) {}
 
     CoreStats& operator+=(const CoreStats& rhs) {
         this->Strength += rhs.Strength;
@@ -33,37 +35,17 @@ struct CoreStats {
     CoreStats& operator-=(const CoreStats& rhs) {
         CoreStats tmp = *this;
 
+        this->Strength -= rhs.Strength;
+        this->Intellect -= rhs.Intellect;
+        this->Agility -= rhs.Agility;
+        this->Armor -= rhs.Armor;
+        this->ElementRes -= rhs.ElementRes;
 
-		if (this->Strength > rhs.Strength) {
-			this->Strength -= rhs.Strength;
-		}
-		else {
-			this->Strength = 0u;
-		}
-		if (this->Intellect > rhs.Intellect) {
-			this->Intellect -= rhs.Intellect;
-		}
-		else {
-			this->Intellect = 0u;
-		}
-		if (this->Agility > rhs.Agility) {
-			this->Agility -= rhs.Agility;
-		}
-		else {
-			this->Agility = 0u;
-		}
-		if (this->Armor > rhs.Armor) {
-			this->Armor -= rhs.Armor;
-		}
-		else {
-			this->Armor = 0u;
-		}
-		if (this->ElementRes > rhs.ElementRes) {
-			this->ElementRes -= rhs.ElementRes;
-		}
-		else {
-			this->ElementRes = 0u;
-		}
+        if (this->Strength > tmp.Strength) this->Strength = 0u;
+        if (this->Intellect > tmp.Intellect) this->Intellect = 0u;
+        if (this->Agility > tmp.Agility) this->Agility = 0u;
+        if (this->Armor > tmp.Armor) this->Armor = 0u;
+        if (this->ElementRes > tmp.ElementRes) this->ElementRes = 0u;
 
         return *this;
     };
