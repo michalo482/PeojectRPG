@@ -131,23 +131,40 @@
     <ClCompile Include="ability.cpp" />
     <ClCompile Include="buff.cpp" />
     <ClCompile Include="corestats.cpp" />
+    <ClCompile Include="armor.cpp" />
+    <ClCompile Include="cleric.cpp" />
     <ClCompile Include="item.cpp" />
     <ClCompile Include="itemManager.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="playerCharacter.cpp" />
     <ClCompile Include="pointwell.cpp" />
+    <ClCompile Include="potion.cpp" />
+    <ClCompile Include="rogue.cpp" />
     <ClCompile Include="statblock.cpp" />
     <ClCompile Include="types.cpp" />
+    <ClCompile Include="warrior.cpp" />
+    <ClCompile Include="weapon.cpp" />
+    <ClCompile Include="wizard.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\ability.h" />
+    <ClInclude Include="include\armor.h" />
     <ClInclude Include="include\buff.h" />
+    <ClInclude Include="include\cleric.h" />
     <ClInclude Include="include\corestats.h" />
     <ClInclude Include="include\item.h" />
     <ClInclude Include="include\itemManager.h" />
+    <ClInclude Include="pc_macros.h" />
+    <ClInclude Include="include\playableclasses_fwd.h" />
     <ClInclude Include="include\pointwell.h" />
     <ClInclude Include="include\playerCharacter.h" />
+    <ClInclude Include="include\potion.h" />
+    <ClInclude Include="include\rogue.h" />
     <ClInclude Include="include\statblock.h" />
     <ClInclude Include="include\types.h" />
+    <ClInclude Include="include\warrior.h" />
+    <ClInclude Include="include\weapon.h" />
+    <ClInclude Include="include\wizard.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
